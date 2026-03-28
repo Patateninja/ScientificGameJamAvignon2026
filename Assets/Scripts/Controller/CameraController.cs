@@ -77,17 +77,19 @@ public class CameraController : MonoBehaviour
 
         if (Physics.Raycast(cam.ScreenPointToRay(Mouse.current.position.ReadValue()), out RaycastHit hit))
         {
+            Debug.Log("Test_Hit");
             if (hit.collider.gameObject.TryGetComponent(out Tile tile))
             {
                 Debug.Log("Tile Clicked");
                 ui.gameObject.SetActive(true);
-                ui.transform.position = hit.transform.position - cam.transform.forward * 3f ;
+                ui.transform.position = hit.transform.position - cam.transform.forward * 10f ;
                 ui.SetTile(tile);
                 ui.SetMode();
             }
         }
         else
         {
+            Debug.Log("Test_NotHit");
             ui.gameObject.SetActive(false);
             ui.SetTile(null);
         }

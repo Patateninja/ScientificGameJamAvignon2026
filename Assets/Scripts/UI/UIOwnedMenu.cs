@@ -70,6 +70,9 @@ public class UIOwnedMenu : MonoBehaviour
         GameObject build = Instantiate(service);
         build.transform.position = tileMenu.linkedTile.transform.position;
         //////
+        ///
+        tileMenu .linkedTile.GetComponent<MeshFilter>().sharedMesh = service.GetComponent<MeshFilter>().sharedMesh;
+        tileMenu .linkedTile.GetComponent<MeshRenderer>().sharedMaterials = service.GetComponent<MeshRenderer>().sharedMaterials;
 
         tileMenu.linkedTile.SetType(TileType.SERVICE);
         tileMenu.linkedTile.value = 0;

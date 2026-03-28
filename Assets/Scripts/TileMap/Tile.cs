@@ -44,15 +44,15 @@ public class Tile : MonoBehaviour
     {
         if (owner == 0)
         {
-            GetComponent<Renderer>().material.color = Color.green;
+            GetComponent<MeshRenderer>().materials[0].SetFloat("Player", 0);
         }
         if (owner == 1)
         {
-            GetComponent<Renderer>().material.color = Color.blue;
+            GetComponent<MeshRenderer>().materials[0].SetFloat("Player", 1);
         }
         if (owner == 2)
         {
-            GetComponent<Renderer>().material.color = Color.red;
+            GetComponent<MeshRenderer>().materials[0].SetFloat("Player", 2);
         }
 
         text.text = value.ToString();
