@@ -18,6 +18,7 @@ public class CameraController : MonoBehaviour
 
     private InputAction moveAction;
     private InputAction interactAction;
+    private InputAction ZoomAction;
 
     bool hoveringUI;
 
@@ -35,7 +36,8 @@ public class CameraController : MonoBehaviour
         }
 
         moveAction = actionAsset.FindAction("Controls/Move");
-        interactAction = actionAsset.FindAction("Controls/Interact");
+        interactAction = actionAsset.FindAction("Controls/Interact"); 
+        ZoomAction = actionAsset.FindAction("Controls/Zoom");
 
         interactAction.performed += Interact;
     
@@ -52,12 +54,14 @@ public class CameraController : MonoBehaviour
         {
             ui.gameObject.SetActive(false);
         }
+        Camera.main.orthographicSize = 50;
     }
 
     void Update()
     {
        MoveCam();
-        hoveringUI = EventSystem.current.IsPointerOverGameObject();
+       ZoomCam();
+       hoveringUI = EventSystem.current.IsPointerOverGameObject();
     }
 
     private void MoveCam()
@@ -91,5 +95,16 @@ public class CameraController : MonoBehaviour
             ui.gameObject.SetActive(false);
             ui.SetTile(null);
         }
+    }
+
+    private void ZoomCam()
+    {
+        float Scroll = ZoomAction.ReadValue<float>();
+        if (Scroll == 0)
+            return;
+
+        Debug.Log($"scroll : {Scroll}");
+        Debug.Log($"Size : {Camera.main.orthographicSize}");
+        Camera.main.orthographicSize = Scroll * Time.deltaTime;
     }
 }
