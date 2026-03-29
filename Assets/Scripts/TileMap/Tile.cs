@@ -34,30 +34,24 @@ public class Tile : MonoBehaviour
     
     void Start()
     {
-        selfvalue = 1;
+        selfvalue = type == TileType.HOUSE ? 2 : 1;
         value = 1;
-        hasBuilding = false;
+        hasBuilding = !(type != TileType.HOUSE && type != TileType.SERVICE && type != TileType.SHOP);
         //satisfaction = 1;
+
+        EvaluateCost();
     }
 
     void Update()
     {
-        if (owner == 0)
-        {
-            GetComponent<MeshRenderer>().materials[0].SetFloat("Player", 0);
-        }
-        if (owner == 1)
-        {
-            GetComponent<MeshRenderer>().materials[0].SetFloat("Player", 1);
-        }
-        if (owner == 2)
-        {
-            GetComponent<MeshRenderer>().materials[0].SetFloat("Player", 2);
-        }
+        GetComponent<MeshRenderer>().materials[1].SetFloat("_Player", owner);
 
-        text.text = value.ToString();
         text.gameObject.SetActive(showVal);
-
+        if (text && showVal)
+        {
+            text.transform.rotation = Quaternion.Euler(-270, 0, -45);
+            text.text = value.ToString();
+        }
     }
 
     public void SetNeighbor(List<Tile> _neighbors)
@@ -82,18 +76,22 @@ public class Tile : MonoBehaviour
 
     public int EvaluateCost()
     {
-        if (type == TileType.SERVICE)
+        if (type == TileType.SERVICE || type == TileType.RIVER)
         {
+            value = 0;
             return 0;
         }
-
+        
         value = selfvalue;
         foreach (Tile tile in neighbors)
         {
             switch (tile.type)
             {
                 case TileType.RIVER :
-                    value++;
+                    if (Mathf.Abs(tile.coordinates.x - coordinates.x) == 0 ^ Mathf.Abs(tile.coordinates.y - coordinates.y) == 0)
+                    {
+                        value++;
+                    }
                     break;
                 case TileType.SERVICE :
                     value++;
@@ -112,5 +110,81 @@ public class Tile : MonoBehaviour
     public void SetType(TileType _type)
     {
         type = _type;
+    }
+
+    public bool CanBuy(int buyerID)
+    {
+        if (type == TileType.RIVER)
+        {
+            return false;
+        }
+
+        if (buyerID == 1) //Player
+        {
+            return owner == 0;
+        }
+        if (buyerID == 2) //Owner
+        {
+            return owner == 0 || owner == 3;
+        }
+        if (buyerID == 3) //Public
+        {
+            return owner == 0;
+        }
+
+        return false;
+    }
+
+
+    public void BuildService(GameObject serv)
+    {
+        hasBuilding = true;
+
+        transform.RotateAround(transform.position, transform.up, Random.Range(0, 3) * 90f);
+
+        GetComponent<MeshFilter>().sharedMesh = serv.GetComponent<MeshFilter>().sharedMesh;
+        GetComponent<MeshRenderer>().sharedMaterials = serv.GetComponent<MeshRenderer>().sharedMaterials;
+
+        SetType(TileType.SERVICE);
+        value = 0;
+
+        foreach (Tile tile in neighbors)
+        {
+            tile.EvaluateCost();
+        }
+    }
+
+    public void BuildHouse(GameObject house)
+    {
+        hasBuilding = true;
+
+        transform.RotateAround(transform.position, transform.up, Random.Range(0, 3) * 90f);
+
+        GetComponent<MeshFilter>().sharedMesh = house.GetComponent<MeshFilter>().sharedMesh;
+        GetComponent<MeshRenderer>().sharedMaterials = house.GetComponent<MeshRenderer>().sharedMaterials;
+
+        ResourceManager.Instance.pop[owner - 1]++;
+
+        selfvalue += 1;
+        SetType(TileType.HOUSE);
+
+        EvaluateCost();
+    }
+
+    public void BuildShop(GameObject store)
+    {
+        hasBuilding = true;
+
+        transform.RotateAround(transform.position, transform.up, Random.Range(0, 3) * 90f);
+
+        GetComponent<MeshFilter>().sharedMesh = store.GetComponent<MeshFilter>().sharedMesh;
+        GetComponent<MeshRenderer>().sharedMaterials = store.GetComponent<MeshRenderer>().sharedMaterials;
+
+        SetType(TileType.SHOP);
+
+        foreach (Tile tile in neighbors)
+        {
+            tile.EvaluateCost();
+        }
     }
 }

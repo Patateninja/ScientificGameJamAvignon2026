@@ -18,6 +18,7 @@ public class CameraController : MonoBehaviour
 
     private InputAction moveAction;
     private InputAction interactAction;
+    private InputAction zoomAction;
 
     bool hoveringUI;
 
@@ -36,9 +37,9 @@ public class CameraController : MonoBehaviour
 
         moveAction = actionAsset.FindAction("Controls/Move");
         interactAction = actionAsset.FindAction("Controls/Interact");
+        zoomAction = actionAsset.FindAction("Controls/Zoom");
 
         interactAction.performed += Interact;
-    
     }
 
     private void OnDestroy()
@@ -56,7 +57,8 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-       MoveCam();
+        MoveCam();
+        Zoom();
         hoveringUI = EventSystem.current.IsPointerOverGameObject();
     }
 
@@ -68,6 +70,13 @@ public class CameraController : MonoBehaviour
         transform.position += transform.rotation * vec * camSpeed * Time.deltaTime;
     }
 
+    private void Zoom()
+    {
+        float zoom = zoomAction.ReadValue<Vector2>().y;
+
+        cam.orthographicSize = Mathf.Clamp(cam.orthographicSize -+ zoom, 1f, 10f);
+    }
+
     private void Interact(InputAction.CallbackContext ctx)
     {
         if (hoveringUI)
@@ -77,12 +86,11 @@ public class CameraController : MonoBehaviour
 
         if (Physics.Raycast(cam.ScreenPointToRay(Mouse.current.position.ReadValue()), out RaycastHit hit))
         {
-            Debug.Log("Test_Hit");
             if (hit.collider.gameObject.TryGetComponent(out Tile tile))
             {
                 Debug.Log("Tile Clicked");
                 ui.gameObject.SetActive(true);
-                ui.transform.position = hit.transform.position - cam.transform.forward * 10f ;
+                ui.transform.position = hit.transform.position - cam.transform.forward * 4f ;
                 ui.SetTile(tile);
                 ui.SetMode();
             }

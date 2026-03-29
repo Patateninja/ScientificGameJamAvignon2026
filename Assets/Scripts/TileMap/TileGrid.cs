@@ -20,14 +20,42 @@ public class TileGrid : MonoBehaviour
     private InputActionAsset actionAsset;
     private InputAction showValAction;
 
+    [SerializeField]
+    private bool generate;
+
     private void Awake()
     {
-        Generate();
+        if (generate)
+        {
+            Generate();
+        }
+        else
+        {
+            RecoverTiles();
+        }
+
         EvaluateNeighbor();
+
+        foreach (Tile tile in tiles)
+        {
+            tile.EvaluateCost();
+            if (tile.type == TileType.HOUSE)
+            {
+                if (tile.owner != 0)
+                {
+                    ResourceManager.Instance.pop[tile.owner - 1]++;
+                }
+                else
+                {
+                    ResourceManager.Instance.pop[3]++;
+                }
+            }
+        }
+
+        ResourceManager.Instance.UpdatePop();
 
         showValAction = actionAsset.FindAction("Controls/ToggleShowVal");
         showValAction.performed += ToggleShowVal;
-
     }
 
     void Start()
@@ -54,6 +82,15 @@ public class TileGrid : MonoBehaviour
                 tile.SetCood(new Vector2(i,j));
                 tiles.Add(tile);
             }
+        }
+    }
+
+    void RecoverTiles()
+    {
+        foreach (Tile tile in GetComponentsInChildren<Tile>())
+        {
+            tiles.Add(tile);
+            tile.coordinates = new Vector2(tile.transform.position.x, tile.transform.position.z);
         }
     }
 

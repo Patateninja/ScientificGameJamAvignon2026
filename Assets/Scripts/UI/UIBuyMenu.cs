@@ -15,11 +15,13 @@ public class UIBuyMenu : MonoBehaviour
 
     void Buy()
     {
-        if (ResourceManager.Instance.CheckMoney(tileMenu.linkedTile.value))
+        if (ResourceManager.Instance.CheckMoney(tileMenu.linkedTile.value, 0))
         {
-            ResourceManager.Instance.AddMoney(-tileMenu.linkedTile.value);
+            ResourceManager.Instance.AddMoney(-tileMenu.linkedTile.value, 0);
             tileMenu.linkedTile.SetOwner(1);
             tileMenu.SetMode();
+
+            tileMenu.linkedTile.EvaluateCost();
         }
         else
         {

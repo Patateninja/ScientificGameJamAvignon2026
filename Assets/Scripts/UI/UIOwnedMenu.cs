@@ -14,7 +14,6 @@ public class UIOwnedMenu : MonoBehaviour
 
     public UITileMenu tileMenu;
 
-    //Temp
     public GameObject house;
     public GameObject service;
     public GameObject store;
@@ -34,25 +33,27 @@ public class UIOwnedMenu : MonoBehaviour
             return;
         }
 
-        buildHomeButton.gameObject.SetActive(!tileMenu.linkedTile.hasBuilding);
-        buildServiceButton.gameObject.SetActive(!tileMenu.linkedTile.hasBuilding);
-        buildEconomicButton.gameObject.SetActive(!tileMenu.linkedTile.hasBuilding);
+        buildHomeButton.gameObject.SetActive(!tileMenu.linkedTile.hasBuilding && tileMenu.linkedTile.type != TileType.RIVER);
+        buildServiceButton.gameObject.SetActive(!tileMenu.linkedTile.hasBuilding && tileMenu.linkedTile.type != TileType.RIVER);
+        buildEconomicButton.gameObject.SetActive(!tileMenu.linkedTile.hasBuilding && tileMenu.linkedTile.type != TileType.RIVER);
     }
 
     void BuildHome()
     {
         if (tileMenu.linkedTile.hasBuilding) return;
-        tileMenu.linkedTile.hasBuilding = true;
+        //tileMenu.linkedTile.hasBuilding = true;
 
-        //Temp
-        GameObject build = Instantiate(house);
-        build.transform.position = tileMenu.linkedTile.transform.position;
-        //////
+        //tileMenu.linkedTile.transform.RotateAround(tileMenu.linkedTile.transform.position, tileMenu.linkedTile.transform.up, Random.Range(0, 3) * 90f);
 
-        tileMenu.linkedTile.selfvalue += 1;
-        tileMenu.linkedTile.SetType(TileType.HOUSE);
+        //tileMenu.linkedTile.GetComponent<MeshFilter>().sharedMesh = house.GetComponent<MeshFilter>().sharedMesh;
+        //tileMenu.linkedTile.GetComponent<MeshRenderer>().sharedMaterials = house.GetComponent<MeshRenderer>().sharedMaterials;
 
-        tileMenu.linkedTile.EvaluateCost();
+        //tileMenu.linkedTile.selfvalue += 1;
+        //tileMenu.linkedTile.SetType(TileType.HOUSE);
+
+        //tileMenu.linkedTile.EvaluateCost();
+
+        tileMenu.linkedTile.BuildHouse(house);
 
         UpdateButton();
     }
@@ -64,23 +65,22 @@ public class UIOwnedMenu : MonoBehaviour
             return;
         }
 
-        tileMenu.linkedTile.hasBuilding = true;
+        //tileMenu.linkedTile.hasBuilding = true;
 
-        //Temp
-        GameObject build = Instantiate(service);
-        build.transform.position = tileMenu.linkedTile.transform.position;
-        //////
-        ///
-        tileMenu .linkedTile.GetComponent<MeshFilter>().sharedMesh = service.GetComponent<MeshFilter>().sharedMesh;
-        tileMenu .linkedTile.GetComponent<MeshRenderer>().sharedMaterials = service.GetComponent<MeshRenderer>().sharedMaterials;
+        //tileMenu.linkedTile.transform.RotateAround(tileMenu.linkedTile.transform.position, tileMenu.linkedTile.transform.up, Random.Range(0, 3) * 90f);
 
-        tileMenu.linkedTile.SetType(TileType.SERVICE);
-        tileMenu.linkedTile.value = 0;
+        //tileMenu.linkedTile.GetComponent<MeshFilter>().sharedMesh = service.GetComponent<MeshFilter>().sharedMesh;
+        //tileMenu.linkedTile.GetComponent<MeshRenderer>().sharedMaterials = service.GetComponent<MeshRenderer>().sharedMaterials;
 
-        foreach (Tile tile in tileMenu.linkedTile.neighbors)
-        {
-            tile.EvaluateCost();
-        }
+        //tileMenu.linkedTile.SetType(TileType.SERVICE);
+        //tileMenu.linkedTile.value = 0;
+
+        //foreach (Tile tile in tileMenu.linkedTile.neighbors)
+        //{
+        //    tile.EvaluateCost();
+        //}
+
+        tileMenu.linkedTile.BuildService(service);
 
         UpdateButton();
     }
@@ -92,26 +92,32 @@ public class UIOwnedMenu : MonoBehaviour
             return;
         }
 
-        tileMenu.linkedTile.hasBuilding = true;
+        //tileMenu.linkedTile.hasBuilding = true;
 
-        //Temp
-        GameObject build = Instantiate(store);
-        build.transform.position = tileMenu.linkedTile.transform.position;
-        //////
+        //tileMenu.linkedTile.transform.RotateAround(tileMenu.linkedTile.transform.position, tileMenu.linkedTile.transform.up, Random.Range(0, 3) * 90f);
 
-        tileMenu.linkedTile.SetType(TileType.SHOP);
+        //tileMenu.linkedTile.GetComponent<MeshFilter>().sharedMesh = store.GetComponent<MeshFilter>().sharedMesh;
+        //tileMenu.linkedTile.GetComponent<MeshRenderer>().sharedMaterials = store.GetComponent<MeshRenderer>().sharedMaterials;
 
-        foreach (Tile tile in tileMenu.linkedTile.neighbors)
-        {
-            tile.EvaluateCost();
-        }
+        //tileMenu.linkedTile.SetType(TileType.SHOP);
+
+        //foreach (Tile tile in tileMenu.linkedTile.neighbors)
+        //{
+        //    tile.EvaluateCost();
+        //}
+
+        tileMenu.linkedTile.BuildShop(store);
 
         UpdateButton();
     }
 
     void Sell()
     {
-        ResourceManager.Instance.AddMoney(tileMenu.linkedTile.value);
+        if (tileMenu.linkedTile.value < 1)
+        {
+            tileMenu.linkedTile.value = 1;
+        }
+        ResourceManager.Instance.AddMoney(tileMenu.linkedTile.value, 0);
         tileMenu.linkedTile.SetOwner(0);
         tileMenu.SetMode();
         UpdateButton();
