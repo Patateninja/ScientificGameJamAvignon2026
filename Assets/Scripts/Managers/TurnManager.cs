@@ -63,13 +63,21 @@ public class TurnManager : MonoBehaviour
             ResourceManager.Instance.AddMoney(revenue[i] - Mathf.RoundToInt(money), 2);
         }
 
-        EvaluateTaxes();
+        //EvaluateTaxes();
+
+        if (turn >= 3)
+        {
+            ResourceManager.Instance.AddMoney(4, 2);
+            ResourceManager.Instance.AddMoney(-2, 1);
+            ResourceManager.Instance.AddMoney(-2, 0);
+
+        }
 
         ResourceManager.Instance.UpdatePop();
 
-        if (ResourceManager.Instance.balances[1] > 75)
+        if (ResourceManager.Instance.balances[1] > 100)
         {
-            //Mayor Vicotry
+            //Mayor Victory
         }
 
         if (ResourceManager.Instance.pop[0] > ResourceManager.Instance.totalPop / 2)

@@ -36,6 +36,19 @@ public class TileGrid : MonoBehaviour
 
         EvaluateNeighbor();
 
+        
+
+        showValAction = actionAsset.FindAction("Controls/ToggleShowVal");
+        showValAction.performed += ToggleShowVal;
+    }
+
+    void Start()
+    {
+        if (tilePrefab == null)
+        {
+            Debug.LogWarning("NO TILE PREFAB");
+        }
+
         foreach (Tile tile in tiles)
         {
             tile.EvaluateCost();
@@ -53,17 +66,6 @@ public class TileGrid : MonoBehaviour
         }
 
         ResourceManager.Instance.UpdatePop();
-
-        showValAction = actionAsset.FindAction("Controls/ToggleShowVal");
-        showValAction.performed += ToggleShowVal;
-    }
-
-    void Start()
-    {
-        if (tilePrefab == null)
-        {
-            Debug.LogWarning("NO TILE PREFAB");
-        }
     }
 
     void Update()

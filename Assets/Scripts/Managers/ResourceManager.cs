@@ -14,8 +14,8 @@ public class ResourceManager : MonoBehaviour
         if (Instance == null)
             Instance = this;
 
-        balances.Add(2);
-        balances.Add(3);
+        balances.Add(5);
+        balances.Add(5);
         balances.Add(4);
 
 
